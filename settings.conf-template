@@ -1,0 +1,12 @@
+# setting hostname for email report
+host=`hostname -f`
+# setting log path
+consoleLogPath="/var/log/letsencrypt"
+consoleLog="$consoleLogPath/renew-letsencrypt-tlsa.log"
+# certificates will be placed into a subfolder in "certPath" named after the main domain you specify in script
+certPath="/etc/letsencrypt/manual"
+# specify email for certbot command
+email="user@yourdomain.tld"
+# specify email for reports (from and to)
+reportemail_from="no-reply@yourdomain.tld"
+reportemail_to="user@yourdomain.tld"

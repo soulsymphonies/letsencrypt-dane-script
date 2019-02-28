@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### OPENSSL Variables for CSR configuration files, edit as required ###
+COUNTRY="DE"
+STATE="BY"
+CITY="Munich"
+ORGANIZATION="Example GmbH"
+DEPARTMENT="IT"
