@@ -142,6 +142,11 @@ if [ ! -d "/etc/ssl/csr/" ]; then
   mkdir -p /etc/ssl/csr/
 fi
    
+# checking if csr file already exists, if yes then delete it
+if [ -f $csrConfigFileName ]; then
+  rm -rf $csrConfigFileName
+fi
+   
 # writing openssl CSR configuration 
 echo "[req]" >> $csrConfigFileName
 echo "distinguished_name = req_distinguished_name" >> $csrConfigFileName
