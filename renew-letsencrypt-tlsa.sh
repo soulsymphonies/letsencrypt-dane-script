@@ -157,8 +157,8 @@ if [ "$multipleDnsAlternativeNames" = true ] ; then
 					echo ""
 					echo "Error: ${dnsAlternativeNames[i]} does not resolve to local IPv6 address $localIPv6" 
 					echo "please adjust your DNS settings"
-				fi 
-				dnsError="yes"
+					dnsError="yes"
+				fi 	
 			fi	
 			# add DNS alternative name to command
 			genCertCommand="$genCertCommand -d ${dnsAlternativeNames[i++]}"
