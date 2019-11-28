@@ -10,3 +10,7 @@ email="user@yourdomain.tld"
 # specify email for reports (from and to)
 reportemail_from="no-reply@yourdomain.tld"
 reportemail_to="user@yourdomain.tld"
+# specify the ethernet interface where the webserver is listening
+webserverInterface="eth0"
+# if you do not use IPv6, set IPV6active to "no"
+IPv6active="yes"
