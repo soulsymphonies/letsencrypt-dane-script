@@ -110,7 +110,7 @@ genCertCommand="certbot certonly --agree-tos --standalone --non-interactive --em
 ###########################################
 
 ### check if DNS resolution of domains points to this host/webserver
-domainIPv4=$( dig +noall +answer +nottlid +short $domainCN a )
+domainIPv4=$( dig +short $domainCN a | grep -v '\.$' )
 if [ "$localIPv4" != "$domainIPv4" ] ; then
 	echo ""
 	echo "Error: $domainCN does not resolve to local IPv4 address/webserver" 
@@ -119,7 +119,7 @@ if [ "$localIPv4" != "$domainIPv4" ] ; then
 fi 
 
 if [ $IPv6active == "yes" ] ; then
-	domainIPv6=$( dig +noall +answer +nottlid +short $domainCN aaaa )
+	domainIPv6=$( dig +short $domainCN aaaa | grep -v '\.$' )
 	if [ "$localIPv6" != "$domainIPv6" ] ; then
 		echo ""
 		echo "Error: $domainCN does not resolve to local IPv6 address/webserver" 
@@ -137,7 +137,7 @@ if [ "$multipleDnsAlternativeNames" = true ] ; then
 		while (( ${#dnsAlternativeNames[@]} > i )); do
 			echo "${dnsAlternativeNames[i]}"
 			# check if DNS alternative name resolves properly to host/webserver IPs
-			domainIPv4=$( dig +noall +answer +nottlid +short ${dnsAlternativeNames[i]} a )
+			domainIPv4=$( dig +short ${dnsAlternativeNames[i]} a | grep -v '\.$' )
 			
 			if [ "$localIPv4" != "$domainIPv4" ] ; then
 				echo ""
@@ -147,7 +147,7 @@ if [ "$multipleDnsAlternativeNames" = true ] ; then
 			fi 
 
 			if [ $IPv6active == "yes" ] ; then
-				domainIPv6=$( dig +noall +answer +nottlid +short ${dnsAlternativeNames[i]} aaaa )
+				domainIPv6=$( dig +short ${dnsAlternativeNames[i]} aaaa | grep -v '\.$' )
 				if [ "$localIPv6" != "$domainIPv6" ] ; then
 					echo ""
 					echo "Error: $domainCN does not resolve to local IPv6 address/webserver" 
