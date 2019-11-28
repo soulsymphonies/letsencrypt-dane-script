@@ -20,3 +20,7 @@ localIPv4override="no"
 localIPv4overrideAddress=""
 localIPv6override="no"
 localIPv6overrideAddress=""
+# if another DNS server than the first locally defined should be used for name resolution
+# specify the DNS server address below and set localDNSServerOverride to "yes"
+localDNSServerOverride="no"
+localDNSServerOverrideAdress=""

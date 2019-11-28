@@ -123,8 +123,15 @@ NOW=$(date +%s)
 genCertCommand="certbot certonly --agree-tos --standalone --non-interactive --email $email --csr $certPath/$domainCN/$csrFilename --cert-path $certPath/$domainCN/$certFilename --key-path $certPath/$domainCN/$privateKeyFilename --rsa-key-size 4096 --chain-path $certPath/$domainCN/$certificateChainFilename --fullchain-path $certPath/$domainCN/$fullChainFilename --logs-dir $letsencryptLogDir --quiet -d $domainCN"
 ###########################################
 
+# set DNS server for name resolution in script
+if [ "$localDNSServerOverride" == "yes" ]
+	DNSServerAdress=$localDNSServerOverrideAdress
+else
+	DNSServerAdress=$(cat /etc/resolv.conf | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}" -m 1)
+fi
+
 ### check if DNS resolution of domains points to this host/webserver
-domainIPv4=$( dig +short $domainCN a | grep -v '\.$' )
+domainIPv4=$( dig @$DNSServerAdress +short $domainCN a | grep -v '\.$' )
 if [ "$localIPv4" != "$domainIPv4" ] ; then
 	echo ""
 	echo "Error: $domainCN does not resolve to local IPv4 address $localIPv4" 
@@ -133,7 +140,7 @@ if [ "$localIPv4" != "$domainIPv4" ] ; then
 fi 
 
 if [ $IPv6active == "yes" ] ; then
-	domainIPv6=$( dig +short $domainCN aaaa | grep -v '\.$' )
+	domainIPv6=$( dig @$DNSServerAdress +short $domainCN aaaa | grep -v '\.$' )
 	if [ "$localIPv6" != "$domainIPv6" ] ; then
 		echo ""
 		echo "Error: $domainCN does not resolve to local IPv6 address $localIPv6" 
@@ -151,7 +158,7 @@ if [ "$multipleDnsAlternativeNames" = true ] ; then
 		while (( ${#dnsAlternativeNames[@]} > i )); do
 			echo "${dnsAlternativeNames[i]}"
 			# check if DNS alternative name resolves properly to host/webserver IPs
-			domainIPv4=$( dig +short ${dnsAlternativeNames[i]} a | grep -v '\.$' )
+			domainIPv4=$( dig @$DNSServerAdress +short ${dnsAlternativeNames[i]} a | grep -v '\.$' )
 			
 			if [ "$localIPv4" != "$domainIPv4" ] ; then
 				echo ""
@@ -161,7 +168,7 @@ if [ "$multipleDnsAlternativeNames" = true ] ; then
 			fi 
 
 			if [ $IPv6active == "yes" ] ; then
-				domainIPv6=$( dig +short ${dnsAlternativeNames[i]} aaaa | grep -v '\.$' )
+				domainIPv6=$( dig @$DNSServerAdress +short ${dnsAlternativeNames[i]} aaaa | grep -v '\.$' )
 				if [ "$localIPv6" != "$domainIPv6" ] ; then
 					echo ""
 					echo "Error: ${dnsAlternativeNames[i]} does not resolve to local IPv6 address $localIPv6" 
