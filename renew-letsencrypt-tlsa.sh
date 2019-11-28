@@ -255,12 +255,13 @@ if [ "$dnsError" != "yes" ] ; then
 			# check if new DNS alternative names have changed or have been added, if so set CERT_VALIDITY to 0, 
 			# so that certificate will be renewed with new/changed DNS alternative names
 			# store previous DNS alternative names
-			PREVIOUS_CERT_ALTERNATIVE_NAMES = $( openssl x509 -text -noout -in $certPath/$domainCN/$certFilename -certopt no_subject,no_header,no_version,no_serial,no_signame,no_validity,no_issuer,no_pubkey,no_sigdump,no_aux | grep DNS: | sed 's/\<DNS\>://g' | sed 's/[[:blank:]]//g' )
+			PREVIOUS_CERT_ALTERNATIVE_NAMES=$( openssl x509 -text -noout -in $certPath/$domainCN/$certFilename -certopt no_subject,no_header,no_version,no_serial,no_signame,no_validity,no_issuer,no_pubkey,no_sigdump,no_aux | grep DNS: | sed 's/\<DNS\>://g' | sed 's/[[:blank:]]//g' )
 			# check if new DNS alternative names are already in the previous certificate, if not set CERT_VALIDITY to 0
-			if	[[ "$PREVIOUS_CERT_ALTERNATIVE_NAMES" != *"${dnsAlternativeNames[i++]}"* ]] ; then
-				echo "${dnsAlternativeNames[i++]} not contained in previous certificate's DNS alternative names"
+			if	[[ "$PREVIOUS_CERT_ALTERNATIVE_NAMES" != *"${dnsAlternativeNames[i]}"* ]] ; then
+				echo "${dnsAlternativeNames[i]} not contained in previous certificate's DNS alternative names"
 				echo "Previous alternative names have been: $PREVIOUS_CERT_ALTERNATIVE_NAMES"
 			fi
+			i=i+1
 		done
 		fi
 	fi
