@@ -278,11 +278,13 @@ if [ "$dnsError" != "yes" ] ; then
 	then
 		### STOPPING WEBSERVER(S) ###
 		if [ "$nginx" = true ] ; then
+			echo ""
 			echo "Stopping nginx"
 			systemctl stop nginx
 		fi
 		
 		if [ "$apache" = true ] ; then
+			echo ""
 			echo "Stopping apache2"
 			systemctl stop apache2
 		fi
