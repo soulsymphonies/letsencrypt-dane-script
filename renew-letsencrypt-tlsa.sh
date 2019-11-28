@@ -363,7 +363,7 @@ fi
 
 # if a DNS error occurred set CERT_VALIDITY to 0, to trigger email alert
 if [ "$dnsError" == "yes" ] ; then
-	CERT_VALIDITY==0
+	CERT_VALIDITY=0
 fi
 # send an email if validity is less than 14 days or if a DNS resolution error occurred 
 if [ $CERT_VALIDITY -lt 14 ] ; then
