@@ -261,7 +261,8 @@ if [ "$dnsError" != "yes" ] ; then
 				echo "${dnsAlternativeNames[i]} not contained in previous certificate's DNS alternative names"
 				echo "Previous alternative names have been: $PREVIOUS_CERT_ALTERNATIVE_NAMES"
 			fi
-			i=i+1
+			# increment counter
+			((i=i+1))
 		done
 		fi
 	fi
