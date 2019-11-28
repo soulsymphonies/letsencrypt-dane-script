@@ -146,7 +146,7 @@ if [ "$multipleDnsAlternativeNames" = true ] ; then
 			
 			if [ "$localIPv4" != "$domainIPv4" ] ; then
 				echo ""
-				echo "Error: $domainCN does not resolve to local IPv4 address/webserver" 
+				echo "Error: ${dnsAlternativeNames[i]} does not resolve to local IPv4 address/webserver" 
 				echo "please adjust your DNS settings"
 				dnsError="yes"
 			fi 
@@ -155,7 +155,7 @@ if [ "$multipleDnsAlternativeNames" = true ] ; then
 				domainIPv6=$( dig +short ${dnsAlternativeNames[i]} aaaa | grep -v '\.$' )
 				if [ "$localIPv6" != "$domainIPv6" ] ; then
 					echo ""
-					echo "Error: $domainCN does not resolve to local IPv6 address/webserver" 
+					echo "Error: ${dnsAlternativeNames[i]} does not resolve to local IPv6 address/webserver" 
 					echo "please adjust your DNS settings"
 				fi 
 				dnsError="yes"
