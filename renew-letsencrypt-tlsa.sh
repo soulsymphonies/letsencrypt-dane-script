@@ -33,9 +33,18 @@ exec > >(tee -i ${consoleLog})
 exec 2>&1
 
 # get IPv4 and IPv6 address of local webserver interface
-localIPv4=$( ip address show dev $webserverInterface scope global | awk '/inet / {split($2,var,"/"); print var[1]}' )
+if [ "$localIPv4override" == "yes" ] ; then
+	localIPv4=$localIPv4overrideAddress
+else
+	localIPv4=$( ip address show dev $webserverInterface scope global | awk '/inet / {split($2,var,"/"); print var[1]}' )
+fi
+
 if [ $IPv6active == "yes" ] ; then
-	localIPv6=$( ip address show dev $webserverInterface scope global | awk '/inet6 / {split($2,var,"/"); print var[1]}' )
+	if [ "$localIPv6override" == "yes" ] ; then
+		localIPv6=$localIPv6overrideAddress
+	else
+		localIPv6=$( ip address show dev $webserverInterface scope global | awk '/inet6 / {split($2,var,"/"); print var[1]}' )
+	fi
 fi
 
 # get options from command line
