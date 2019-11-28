@@ -91,8 +91,14 @@ done
 
 ### CHECKING IF domainCN variable is set
 if [ -z "$domainCN" ]; then
-    echo "domainname not specified, please use the following option" 
+    echo "Error: domainname not specified, please use the following option" 
     echo "-d domainname"
+    exit 64;
+fi
+
+if [ -z "$webserver" ]; then
+    echo "Error: webserver is not specified, please use the following option" 
+    echo "-w nginx or -w apache"
     exit 64;
 fi
 
@@ -105,7 +111,6 @@ certificateChainFilename="chain.pem"
 fullChainFilename="fullchain.pem"
 letsencryptLogDir="/var/log/letsencrypt"
 NOW=$(date +%s)
-dnsError="no"
 genCertCommand="certbot certonly --agree-tos --standalone --non-interactive --email $email --csr $certPath/$domainCN/$csrFilename --cert-path $certPath/$domainCN/$certFilename --key-path $certPath/$domainCN/$privateKeyFilename --rsa-key-size 4096 --chain-path $certPath/$domainCN/$certificateChainFilename --fullchain-path $certPath/$domainCN/$fullChainFilename --logs-dir $letsencryptLogDir --quiet -d $domainCN"
 ###########################################
 
@@ -124,8 +129,8 @@ if [ $IPv6active == "yes" ] ; then
 		echo ""
 		echo "Error: $domainCN does not resolve to local IPv6 address/webserver" 
 		echo "please adjust your DNS settings"
-	fi 
 	dnsError="yes"
+	fi 
 fi
 
 ### ADJUSTING genCertCommand for additional DNS subject alternative names
@@ -246,7 +251,7 @@ else
 fi
 ###################################################
 	
-if [ $dnsError == "no" ] ; then
+if [ "$dnsError" != "yes" ] ; then
 	### RENEWING CERTIFICATE ###
 	# if valid less then 14 days renew
 	# if certificate does not exist create new certificate
