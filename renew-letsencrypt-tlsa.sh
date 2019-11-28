@@ -124,7 +124,7 @@ genCertCommand="certbot certonly --agree-tos --standalone --non-interactive --em
 ###########################################
 
 # set DNS server for name resolution in script
-if [ "$localDNSServerOverride" == "yes" ]
+if [ "$localDNSServerOverride" == "yes" ] ; then
 	DNSServerAdress=$localDNSServerOverrideAdress
 else
 	DNSServerAdress=$(cat /etc/resolv.conf | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}" -m 1)
