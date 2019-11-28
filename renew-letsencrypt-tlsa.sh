@@ -166,92 +166,91 @@ if [ "$multipleDnsAlternativeNames" = true ] ; then
 	fi
 ##########################################
 
-
-### CHECKING DIRECTORIES and FILES ###
-# checking if directory exists, if not create it
-if [ ! -d "$certPath/$domainCN" ]; then
-  mkdir -p $certPath/$domainCN
-fi
-
-# checking if private key file exist, if not create it
-if [ ! -f $certPath/$domainCN/$privateKeyFilename ]; then
-	echo ""
-	echo "### Private Key Section ###"
-	echo "Note: $certPath/$domainCN/$privateKeyFilename not found!"
-	echo "Private Key is required for this script to work"
-	echo "Generating private key $certPath/$domainCN/$privateKeyFilename with RSA 4096"
-	openssl genrsa -out $certPath/$domainCN/$privateKeyFilename 4096
-fi
-
-# generating csr file with specified settings from openssl.conf
-echo -e "\n"
-echo "### CSR Section ###"
-echo "Generating CSR configuration file /etc/ssl/csr/$domainCN-csr.conf"
-
-# checking if directory exists, if not create it
-if [ ! -d "/etc/ssl/csr/" ]; then
-  echo "/etc/ssl/csr directory did not exist, creating it"
-  mkdir -p /etc/ssl/csr/
-fi
-   
-# checking if csr file already exists, if yes then delete it
-if [ -f $csrConfigFileName ]; then
-  rm -rf $csrConfigFileName
-fi
-   
-# writing openssl CSR configuration 
-echo "[req]" >> $csrConfigFileName
-echo "distinguished_name = req_distinguished_name" >> $csrConfigFileName
-echo "req_extensions = v3_req" >> $csrConfigFileName
-echo "prompt = no" >> $csrConfigFileName
-echo "[req_distinguished_name]" >> $csrConfigFileName
-echo "C = $COUNTRY" >> $csrConfigFileName
-echo "ST = $STATE" >> $csrConfigFileName
-echo "L = $CITY" >> $csrConfigFileName
-echo "O = $ORGANIZATION" >> $csrConfigFileName
-echo "OU = $DEPARTMENT" >> $csrConfigFileName
-echo "CN = $domainCN" >> $csrConfigFileName
-echo "[v3_req]" >> $csrConfigFileName
-echo "keyUsage = keyEncipherment, dataEncipherment" >> $csrConfigFileName
-echo "extendedKeyUsage = serverAuth" >> $csrConfigFileName
-echo "subjectAltName = @alt_names" >> $csrConfigFileName
-echo "[alt_names]" >> $csrConfigFileName
-echo "DNS.1 = $domainCN" >> $csrConfigFileName
-##########################################
-
-# add additional alternative subject DNS names to CSR if set
-if [ "$multipleDnsAlternativeNames" = true ] ; then
-	let j=0
-	# first dns entry is already present, start with DNS.2 and increment
-	dnsCount=2;
-	while (( ${#dnsAlternativeNames[@]} > j )); do
-		echo "DNS.$dnsCount = ${dnsAlternativeNames[j++]}" >> $csrConfigFileName
-		((dnsCount++))
-	done
-fi
-
-# finally create actual CSR file with openssl command
-openssl req -new -out $certPath/$domainCN/$csrFilename -key $certPath/$domainCN/$privateKeyFilename -config /etc/ssl/csr/$domainCN-csr.conf
-##########################################
-
-
-# check if certificate already exists, evaluate its validity
-if [ ! -f $certPath/$domainCN/$certFilename ]; then
-  # if certificate does not exist set validity to 0
-	CERT_VALIDITY=0
-else
-  # if certificate exists read validity end date
-	OPENSSL_ENDDATE="$(openssl x509 -enddate -noout -in $certPath/$domainCN/$certFilename)"
-	# cutting first 9 letters of openssl output to get clean end date
-	CERT_ENDDATE=${OPENSSL_ENDDATE:9}
-	# convert to seconds EPOCH
-	CERT_ENDDATE=$(date -d "$CERT_ENDDATE" +%s)
-	# computing validity days
-	CERT_VALIDITY=$((($CERT_ENDDATE - $NOW) / (24*3600)))
-fi
-###################################################
-	
 if [ "$dnsError" != "yes" ] ; then
+	### CHECKING DIRECTORIES and FILES ###
+	# checking if directory exists, if not create it
+	if [ ! -d "$certPath/$domainCN" ]; then
+	  mkdir -p $certPath/$domainCN
+	fi
+
+	# checking if private key file exist, if not create it
+	if [ ! -f $certPath/$domainCN/$privateKeyFilename ]; then
+		echo ""
+		echo "### Private Key Section ###"
+		echo "Note: $certPath/$domainCN/$privateKeyFilename not found!"
+		echo "Private Key is required for this script to work"
+		echo "Generating private key $certPath/$domainCN/$privateKeyFilename with RSA 4096"
+		openssl genrsa -out $certPath/$domainCN/$privateKeyFilename 4096
+	fi
+
+	# generating csr file with specified settings from openssl.conf
+	echo -e "\n"
+	echo "### CSR Section ###"
+	echo "Generating CSR configuration file /etc/ssl/csr/$domainCN-csr.conf"
+
+	# checking if directory exists, if not create it
+	if [ ! -d "/etc/ssl/csr/" ]; then
+	  echo "/etc/ssl/csr directory did not exist, creating it"
+	  mkdir -p /etc/ssl/csr/
+	fi
+	   
+	# checking if csr file already exists, if yes then delete it
+	if [ -f $csrConfigFileName ]; then
+	  rm -rf $csrConfigFileName
+	fi
+	   
+	# writing openssl CSR configuration 
+	echo "[req]" >> $csrConfigFileName
+	echo "distinguished_name = req_distinguished_name" >> $csrConfigFileName
+	echo "req_extensions = v3_req" >> $csrConfigFileName
+	echo "prompt = no" >> $csrConfigFileName
+	echo "[req_distinguished_name]" >> $csrConfigFileName
+	echo "C = $COUNTRY" >> $csrConfigFileName
+	echo "ST = $STATE" >> $csrConfigFileName
+	echo "L = $CITY" >> $csrConfigFileName
+	echo "O = $ORGANIZATION" >> $csrConfigFileName
+	echo "OU = $DEPARTMENT" >> $csrConfigFileName
+	echo "CN = $domainCN" >> $csrConfigFileName
+	echo "[v3_req]" >> $csrConfigFileName
+	echo "keyUsage = keyEncipherment, dataEncipherment" >> $csrConfigFileName
+	echo "extendedKeyUsage = serverAuth" >> $csrConfigFileName
+	echo "subjectAltName = @alt_names" >> $csrConfigFileName
+	echo "[alt_names]" >> $csrConfigFileName
+	echo "DNS.1 = $domainCN" >> $csrConfigFileName
+	##########################################
+
+	# add additional alternative subject DNS names to CSR if set
+	if [ "$multipleDnsAlternativeNames" = true ] ; then
+		let j=0
+		# first dns entry is already present, start with DNS.2 and increment
+		dnsCount=2;
+		while (( ${#dnsAlternativeNames[@]} > j )); do
+			echo "DNS.$dnsCount = ${dnsAlternativeNames[j++]}" >> $csrConfigFileName
+			((dnsCount++))
+		done
+	fi
+
+	# finally create actual CSR file with openssl command
+	openssl req -new -out $certPath/$domainCN/$csrFilename -key $certPath/$domainCN/$privateKeyFilename -config /etc/ssl/csr/$domainCN-csr.conf
+	##########################################
+
+
+	# check if certificate already exists, evaluate its validity
+	if [ ! -f $certPath/$domainCN/$certFilename ]; then
+	  # if certificate does not exist set validity to 0
+		CERT_VALIDITY=0
+	else
+	  # if certificate exists read validity end date
+		OPENSSL_ENDDATE="$(openssl x509 -enddate -noout -in $certPath/$domainCN/$certFilename)"
+		# cutting first 9 letters of openssl output to get clean end date
+		CERT_ENDDATE=${OPENSSL_ENDDATE:9}
+		# convert to seconds EPOCH
+		CERT_ENDDATE=$(date -d "$CERT_ENDDATE" +%s)
+		# computing validity days
+		CERT_VALIDITY=$((($CERT_ENDDATE - $NOW) / (24*3600)))
+	fi
+	###################################################
+	
 	### RENEWING CERTIFICATE ###
 	# if valid less then 14 days renew
 	# if certificate does not exist create new certificate
@@ -362,7 +361,11 @@ if [ "$dnsError" != "yes" ] ; then
 	############################################
 fi
 
+# if a DNS error occurred set CERT_VALIDITY to 0, to trigger email alert
+if [ "$dnsError" == "yes" ] ; then
+	CERT_VALIDITY==0
+fi
 # send an email if validity is less than 14 days or if a DNS resolution error occurred 
-if [ $CERT_VALIDITY -lt 14 ] || [ "$dnsError" == "true" ]; then
+if [ $CERT_VALIDITY -lt 14 ] ; then
     mailx -a "From: "$host" Certificates <"$reportemail_from">" -s "Certificate Script | "$host $reportemail_to < $consoleLog
 fi
