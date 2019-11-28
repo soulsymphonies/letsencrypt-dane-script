@@ -250,6 +250,8 @@ if [ "$dnsError" != "yes" ] ; then
 		CERT_VALIDITY=$((($CERT_ENDDATE - $NOW) / (24*3600)))
 				
 		if [ "$multipleDnsAlternativeNames" = true ] ; then
+		echo ""
+		echo "### Previous alternative name checks ###"
 		let i=0
 		while (( ${#dnsAlternativeNames[@]} > i )); do
 			# check if new DNS alternative names have changed or have been added, if so set CERT_VALIDITY to 0, 
@@ -258,8 +260,9 @@ if [ "$dnsError" != "yes" ] ; then
 			PREVIOUS_CERT_ALTERNATIVE_NAMES=$( openssl x509 -text -noout -in $certPath/$domainCN/$certFilename -certopt no_subject,no_header,no_version,no_serial,no_signame,no_validity,no_issuer,no_pubkey,no_sigdump,no_aux | grep DNS: | sed 's/\<DNS\>://g' | sed 's/[[:blank:]]//g' )
 			# check if new DNS alternative names are already in the previous certificate, if not set CERT_VALIDITY to 0
 			if	[[ "$PREVIOUS_CERT_ALTERNATIVE_NAMES" != *"${dnsAlternativeNames[i]}"* ]] ; then
-				echo "${dnsAlternativeNames[i]} not contained in previous certificate's DNS alternative names"
-				echo "Previous alternative names have been: $PREVIOUS_CERT_ALTERNATIVE_NAMES"
+				echo "${dnsAlternativeNames[i]} was not contained in previous certificate's DNS alternative names"
+				echo "Info: previous alternative DNS names were: $PREVIOUS_CERT_ALTERNATIVE_NAMES"
+				CERT_VALIDITY=0;
 			fi
 			# increment counter
 			((i=i+1))
