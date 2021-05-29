@@ -293,9 +293,9 @@ if [ "$dnsError" != "yes" ] ; then
 	###################################################
 	
 	### RENEWING CERTIFICATE ###
-	# if valid less then 14 days renew
+	# if valid less then 30 days renew
 	# if certificate does not exist create new certificate
-	if [ $CERT_VALIDITY -lt 14 ] || [ $forceRenewal == true ]
+	if [ $CERT_VALIDITY -lt 30 ] || [ $forceRenewal == true ]
 	then
 		### STOPPING WEBSERVER(S) ###
 		if [ "$nginx" = true ] ; then
@@ -409,6 +409,6 @@ if [ "$dnsError" == "yes" ] ; then
 	CERT_VALIDITY=0
 fi
 # send an email if validity is less than 14 days or if a DNS resolution error occurred 
-if [ $CERT_VALIDITY -lt 14 ] ; then
+if [ $CERT_VALIDITY -lt 30 ] ; then
     mailx -a "From: "$host" Certificates <"$reportemail_from">" -s "Certificate Script | "$host $reportemail_to < $consoleLog
 fi
