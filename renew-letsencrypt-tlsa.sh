@@ -48,13 +48,16 @@ if [ $IPv6active == "yes" ] ; then
 fi
 
 # get options from command line
-while getopts ":d:e:m:w:" opt; do
+while getopts ":d:e:f:m:w:" opt; do
   case $opt in
 	d)	domainCN="$OPTARG"
 		echo "Domain name is set to: $domainCN"
     ;;
 	e)  email=true
 		echo "Note: email server option is set."
+	;;
+	f)  forceRenewal=true
+		echo "Note: Renewal is forced."
 	;;
 	m)  multipleDnsAlternativeNames=true
 		dnsAlternativeNamesFile="$OPTARG"
@@ -292,7 +295,7 @@ if [ "$dnsError" != "yes" ] ; then
 	### RENEWING CERTIFICATE ###
 	# if valid less then 14 days renew
 	# if certificate does not exist create new certificate
-	if [ $CERT_VALIDITY -lt 14 ]
+	if [ $CERT_VALIDITY -lt 14 ] || [ $forceRenewal == true ]
 	then
 		### STOPPING WEBSERVER(S) ###
 		if [ "$nginx" = true ] ; then
