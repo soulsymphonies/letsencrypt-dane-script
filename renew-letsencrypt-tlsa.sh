@@ -279,8 +279,7 @@ if [ "$dnsError" != "yes" ] ; then
 			PREVIOUS_CERT_ALTERNATIVE_NAMES=$( openssl x509 -text -noout -in $certPath/$domainCN/$certFilename -certopt no_subject,no_header,no_version,no_serial,no_signame,no_validity,no_issuer,no_pubkey,no_sigdump,no_aux | grep DNS: | sed 's/\<DNS\>://g' | sed 's/[[:blank:]]//g' )
 			# check if new DNS alternative names are already in the previous certificate, if not set CERT_VALIDITY to 0
 			if	[[ "$PREVIOUS_CERT_ALTERNATIVE_NAMES" != *"${dnsAlternativeNames[i]}"* ]] ; then
-				echo "${dnsAlternativeNames[i]} was not contained in previous certificate's DNS alternative names"
-				echo "Info: previous alternative DNS names were: $PREVIOUS_CERT_ALTERNATIVE_NAMES"
+				echo Note: "${dnsAlternativeNames[i]} was NOT contained in previous certificate's DNS alternative names"
 				CERT_VALIDITY=0;
 			else
 				echo "${dnsAlternativeNames[i]} was already contained in previous certificate's DNS alternative names"
