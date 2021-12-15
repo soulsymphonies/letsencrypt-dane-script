@@ -114,6 +114,10 @@ if [ -z "$webserver" ]; then
     exit 64;
 fi
 
+if [ -z "$forceRenewal" ] ; then
+    forceRenewal=false
+fi
+
 ### OTHER VARIABLES ###
 certFilename="$domainCN.pem"
 csrFilename="$domainCN.csr.pem"
@@ -280,7 +284,8 @@ if [ "$dnsError" != "yes" ] ; then
 			# check if new DNS alternative names are already in the previous certificate, if not set CERT_VALIDITY to 0
 			if	[[ "$PREVIOUS_CERT_ALTERNATIVE_NAMES" != *"${dnsAlternativeNames[i]}"* ]] ; then
 				echo Note: "${dnsAlternativeNames[i]} was NOT contained in previous certificate's DNS alternative names"
-				CERT_VALIDITY=0;
+				echo "Info: previous alternative DNS names were: $PREVIOUS_CERT_ALTERNATIVE_NAMES"
+				forceRenewal=true;
 			else
 				echo "${dnsAlternativeNames[i]} was already contained in previous certificate's DNS alternative names"
 			fi
